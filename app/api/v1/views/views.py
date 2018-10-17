@@ -20,3 +20,8 @@ class Products(Resource):
     def get(self):
         """get all Products from products list"""
         return product.get_all_products()
+
+    def post(self):
+        """Add a product to the products list"""
+        args = self.parser.parse_args()
+        return product.add_product(**args)
