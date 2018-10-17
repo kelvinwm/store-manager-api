@@ -2,6 +2,8 @@ from flask_restful import Resource, reqparse
 from app.api.v1.models import Products
 
 product = Products()
+
+
 # sale = Sales()
 # cart = Cart()
 
@@ -25,3 +27,19 @@ class Products(Resource):
         """Add a product to the products list"""
         args = self.parser.parse_args()
         return product.add_product(**args)
+
+
+class Product(Resource):
+    """get or update or delete a single product from the products list """
+
+    def __init__(self):
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument("product_name", required=True, help="No product name provided", location=['json'])
+        self.parser.add_argument("price", required=True, type=int, help="No price provided", location=['json'])
+        self.parser.add_argument("description", required=True, help="No price provided", location=['json'])
+        self.parser.add_argument("quantity", required=True, type=int, help="No quantity provided", location=['json'])
+        super().__init__()
+
+    def get(self, product_id):
+        """get a single product from the products list """
+        return product.get_one_product(product_id)
