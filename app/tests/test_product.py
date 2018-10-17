@@ -12,7 +12,7 @@ class TestProducts(unittest.TestCase):
         self.data = {"product_name": "Jesma",
                      "description": "Good book",
                      "quantity": 100,
-                     "price": 1500
+                     "price": 100
                      }
         self.error_data = {"product_name": "Jesma",
                            "description": "Good book",
