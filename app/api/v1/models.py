@@ -93,3 +93,23 @@ class Sales:
         return make_response(jsonify({
             "All sales": all_sales
         }), 200)
+
+    def add_sale(self, attendant_name, product_name, quantity, price, total_price, date):
+        item_id = len(all_sales) + 1
+        new_sale = {"sale_id": item_id,
+                    "attendant_name": attendant_name,
+                    "product_name": product_name,
+                    "quantity": quantity,
+                    "price": price,
+                    "total_price": total_price,
+                    "date": date}
+        all_sales.append(new_sale)
+        product_id = [product for product in products if product['product_name'] == product_name]
+        if product_id:
+            """call delete function from products class to delete the product from the products list"""
+            product_id[0]['quantity']=product_id[0]['quantity']-1
+        return make_response(jsonify({
+            "status": "OK",
+            "Message": "Product added successfully",
+            "all_sales": all_sales
+        }), 201)

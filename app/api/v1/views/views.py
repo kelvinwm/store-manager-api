@@ -4,6 +4,8 @@ from app.api.v1.models import Products, Sales
 product = Products()
 
 sale = Sales()
+
+
 # cart = Cart()
 
 
@@ -52,8 +54,10 @@ class Product(Resource):
         """delete a single product from the products list """
         return product.delete_product(product_id)
 
+
 class Sales(Resource):
     """Sales """
+
     def __init__(self):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument("attendant_name", required=True, help="No product name provided", location=['json'])
@@ -67,3 +71,8 @@ class Sales(Resource):
     def get(self):
         """get all sales from all_sales list """
         return sale.get_all_sales()
+
+    def post(self):
+        """add a new sale record to all_sales list """
+        args = self.parser.parse_args()
+        return sale.add_sale(**args)
