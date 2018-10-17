@@ -1,4 +1,5 @@
 from flask import make_response, jsonify
+
 # from app.api.v1.utils import Validate
 products = []
 all_sales = []
@@ -85,3 +86,10 @@ class Products:
         }), 200)
 
 
+class Sales:
+    """sales functions"""
+
+    def get_all_sales(self):
+        return make_response(jsonify({
+            "All sales": all_sales
+        }), 200)

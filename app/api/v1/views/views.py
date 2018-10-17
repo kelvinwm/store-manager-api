@@ -1,10 +1,9 @@
 from flask_restful import Resource, reqparse
-from app.api.v1.models import Products
+from app.api.v1.models import Products, Sales
 
 product = Products()
 
-
-# sale = Sales()
+sale = Sales()
 # cart = Cart()
 
 
@@ -52,3 +51,19 @@ class Product(Resource):
     def delete(self, product_id):
         """delete a single product from the products list """
         return product.delete_product(product_id)
+
+class Sales(Resource):
+    """Sales """
+    def __init__(self):
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument("attendant_name", required=True, help="No product name provided", location=['json'])
+        self.parser.add_argument("product_name", required=True, help="No product name provided", location=['json'])
+        self.parser.add_argument("price", required=True, type=int, help="No price provided", location=['json'])
+        self.parser.add_argument("total_price", required=True, type=int, help="No price provided", location=['json'])
+        self.parser.add_argument("quantity", required=True, type=int, help="No quantity provided", location=['json'])
+        self.parser.add_argument("date", required=True, help="No quantity provided", location=['json'])
+        super().__init__()
+
+    def get(self):
+        """get all sales from all_sales list """
+        return sale.get_all_sales()
