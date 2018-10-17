@@ -17,4 +17,6 @@ class Products(Resource):
         self.parser.add_argument("quantity", required=True, type=int, help="No quantity provided", location=['json'])
         super().__init__()
 
-
+    def get(self):
+        """get all Products from products list"""
+        return product.get_all_products()
