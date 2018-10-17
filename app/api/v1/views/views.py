@@ -43,3 +43,8 @@ class Product(Resource):
     def get(self, product_id):
         """get a single product from the products list """
         return product.get_one_product(product_id)
+
+    def put(self, product_id):
+        """update a single product from the products list """
+        args = self.parser.parse_args()
+        return product.update_product(product_id, **args)
