@@ -52,10 +52,10 @@ class TestProducts(unittest.TestCase):
         res = self.app.put('/api/v1/users/products/12', data=json.dumps(self.data), content_type="application/json")
         self.assertEqual(res.status_code, 404)
 
-    # def test_product_list_deletion(self):
-    #     """TEST API can delete existing product list item"""
-    #     result = self.app.delete('/api/v1/users/products/1', data=json.dumps(self.data),
-    #                              content_type="application/json")
-    #     self.assertEqual(result.status_code, 200)
-    #     res = self.app.get('/api/v1/users/products/1', data=json.dumps(self.data), content_type="application/json")
-    #     self.assertEqual(res.status_code, 404)
+    def test_product_list_deletion(self):
+        """TEST API can delete existing product list item"""
+        result = self.app.delete('/api/v1/users/products/1', data=json.dumps(self.data),
+                                 content_type="application/json")
+        self.assertEqual(result.status_code, 200)
+        res = self.app.get('/api/v1/users/products/1', data=json.dumps(self.data), content_type="application/json")
+        self.assertEqual(res.status_code, 404)

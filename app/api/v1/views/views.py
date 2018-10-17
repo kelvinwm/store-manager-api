@@ -48,3 +48,7 @@ class Product(Resource):
         """update a single product from the products list """
         args = self.parser.parse_args()
         return product.update_product(product_id, **args)
+
+    def delete(self, product_id):
+        """delete a single product from the products list """
+        return product.delete_product(product_id)
