@@ -17,8 +17,13 @@ class TestProducts(unittest.TestCase):
         self.err_data = {"product_name": "Jesma",
                          "description": "Good book",
                          "quantity": 100,
-                         "price": "dkls"
+                         "price": "nklsvnd"
                          }
+        self._data = {"product_name": "Jsma",
+                      "description": "Good book",
+                      "quantity": 100,
+                      "price": -100
+                      }
 
     def test_get_all_items(self):
         """TEST API can return all products in the list"""
@@ -34,9 +39,17 @@ class TestProducts(unittest.TestCase):
 
     def test_invalid_add_product(self):
         """TEST API can add product to list properly"""
-        response = self.app.post('/api/v1/users/products', data=json.dumps( self.err_data), content_type="application/json")
+        response = self.app.post('/api/v1/users/products', data=json.dumps(self.err_data),
+                                 content_type="application/json")
         result = json.loads(response.data.decode('utf-8'))
-        self.assertEqual(result, {'message': {'price': 'No price provided'}})
+        self.assertEqual(result, {'message': {'price': 'Invalid entry'}})
+
+    def test_negative_number_entries(self):
+        """TEST API can add product to list properly"""
+        response = self.app.post('/api/v1/users/products', data=json.dumps(self._data),
+                                 content_type="application/json")
+        result = json.loads(response.data.decode('utf-8'))
+        self.assertEqual(result['message'], "price or quantity should be a positive integer")
 
     def test_get_one_product(self):
         """TEST API can get a single product"""

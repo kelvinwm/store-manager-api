@@ -14,10 +14,10 @@ class Products(Resource):
 
     def __init__(self):
         self.parser = reqparse.RequestParser()
-        self.parser.add_argument("product_name", required=True, help="No product name provided", location=['json'])
-        self.parser.add_argument("price", required=True, type=int, help="No price provided", location=['json'])
-        self.parser.add_argument("description", required=True, help="No price provided", location=['json'])
-        self.parser.add_argument("quantity", required=True, type=int, help="No quantity provided", location=['json'])
+        self.parser.add_argument("product_name", required=True, help="Invalid entry", location=['json'])
+        self.parser.add_argument("price", required=True, type=int, help="Invalid entry", location=['json'])
+        self.parser.add_argument("description", required=True, help="Invalid entry", location=['json'])
+        self.parser.add_argument("quantity", required=True, type=int, help="Invalid entry", location=['json'])
         super().__init__()
 
     def get(self):
@@ -35,10 +35,10 @@ class Product(Resource):
 
     def __init__(self):
         self.parser = reqparse.RequestParser()
-        self.parser.add_argument("product_name", required=True, help="No product name provided", location=['json'])
-        self.parser.add_argument("price", required=True, type=int, help="No price provided", location=['json'])
-        self.parser.add_argument("description", required=True, help="No price provided", location=['json'])
-        self.parser.add_argument("quantity", required=True, type=int, help="No quantity provided", location=['json'])
+        self.parser.add_argument("product_name", required=True, help="Invalid entry", location=['json'])
+        self.parser.add_argument("price", required=True, type=int, help="Invalid entry", location=['json'])
+        self.parser.add_argument("description", required=True, help="Invalid entry", location=['json'])
+        self.parser.add_argument("quantity", required=True, type=int, help="Invalid entry", location=['json'])
         super().__init__()
 
     def get(self, product_id):
@@ -60,12 +60,12 @@ class Sales(Resource):
 
     def __init__(self):
         self.parser = reqparse.RequestParser()
-        self.parser.add_argument("attendant_name", required=True, help="No product name provided", location=['json'])
-        self.parser.add_argument("product_name", required=True, help="No product name provided", location=['json'])
-        self.parser.add_argument("price", required=True, type=int, help="No price provided", location=['json'])
-        self.parser.add_argument("total_price", required=True, type=int, help="No price provided", location=['json'])
-        self.parser.add_argument("quantity", required=True, type=int, help="No quantity provided", location=['json'])
-        self.parser.add_argument("date", required=True, help="No quantity provided", location=['json'])
+        self.parser.add_argument("attendant_name", required=True, help="Invalid entry", location=['json'])
+        self.parser.add_argument("product_name", required=True, help="Invalid entry", location=['json'])
+        self.parser.add_argument("price", required=True, type=int, help="Invalid entry", location=['json'])
+        self.parser.add_argument("total_price", required=True, type=int, help="Invalid entry", location=['json'])
+        self.parser.add_argument("quantity", required=True, type=int, help="Invalid entry", location=['json'])
+        self.parser.add_argument("date", required=True, help="Invalid entry", location=['json'])
         super().__init__()
 
     def get(self):
@@ -76,3 +76,19 @@ class Sales(Resource):
         """add a new sale record to all_sales list """
         args = self.parser.parse_args()
         return sale.add_sale(**args)
+
+class Sale(Resource):
+    """get or update or delete a single sale """
+    def __init__(self):
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument("attendant_name", required=True, help="Invalid entry", location=['json'])
+        self.parser.add_argument("product_name", required=True, help="Invalid entry", location=['json'])
+        self.parser.add_argument("price", required=True, type=int, help="Invalid entry", location=['json'])
+        self.parser.add_argument("total_price", required=True, type=int, help="Invalid entry", location=['json'])
+        self.parser.add_argument("quantity", required=True, type=int, help="Invalid entry", location=['json'])
+        self.parser.add_argument("date", required=True, help="Invalid entry", location=['json'])
+        super().__init__()
+
+    def get(self, sale_id):
+        """get a single sale from  all_sales list"""
+        return sale.get_one_sale(sale_id)

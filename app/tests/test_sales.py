@@ -38,14 +38,14 @@ class TestSales(unittest.TestCase):
         """TEST API can detect sale record with incorrect data"""
         response = self.app.post('/api/v1/users/sales', data=json.dumps(self.err_data), content_type="application/json")
         result = json.loads(response.data.decode('utf-8'))
-        self.assertEqual(result, {'message': {'price': 'No price provided'}})
-    #
-    # def test_get_one_sale_record(self):
-    #     """TEST API can get a single sales record"""
-    #     result = self.app.get('/api/v1/users/sales/1', content_type='application/json')
-    #     self.assertEqual(result.status_code, 200)
-    #     result = self.app.get('/api/v1/users/sales/9', content_type='application/json')
-    #     self.assertEqual(result.status_code, 404)
+        self.assertEqual(result, {'message': {'price': 'Invalid entry'}})
+
+    def test_get_one_sale_record(self):
+        """TEST API can get a single sales record"""
+        result = self.app.get('/api/v1/users/sales/1', content_type='application/json')
+        self.assertEqual(result.status_code, 200)
+        result = self.app.get('/api/v1/users/sales/9', content_type='application/json')
+        self.assertEqual(result.status_code, 404)
     #
     # def test_sale_record_can_be_edited(self):
     #     """TEST API can edit existing sale record list"""
