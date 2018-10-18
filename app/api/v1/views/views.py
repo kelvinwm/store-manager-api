@@ -77,8 +77,10 @@ class Sales(Resource):
         args = self.parser.parse_args()
         return sale.add_sale(**args)
 
+
 class Sale(Resource):
     """get or update or delete a single sale """
+
     def __init__(self):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument("attendant_name", required=True, help="Invalid entry", location=['json'])
@@ -92,3 +94,13 @@ class Sale(Resource):
     def get(self, sale_id):
         """get a single sale from  all_sales list"""
         return sale.get_one_sale(sale_id)
+
+    def put(self, sale_id):
+        """update a single sale record in all_sales list"""
+        args = self.parser.parse_args()
+        return sale.update_sale(sale_id, **args)
+
+    def delete(self, sale_id):
+        """delete a single sale record in all_sales list"""
+        return sale.delete_sale(sale_id)
+

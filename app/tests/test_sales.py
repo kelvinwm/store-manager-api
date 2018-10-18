@@ -46,17 +46,17 @@ class TestSales(unittest.TestCase):
         self.assertEqual(result.status_code, 200)
         result = self.app.get('/api/v1/users/sales/9', content_type='application/json')
         self.assertEqual(result.status_code, 404)
-    #
-    # def test_sale_record_can_be_edited(self):
-    #     """TEST API can edit existing sale record list"""
-    #     result=self.app.put('/api/v1/users/sales/1', data=json.dumps(self.data), content_type="application/json")
-    #     self.assertEqual(result.status_code, 200)
-    #     res=self.app.put('/api/v1/users/sales/12', data=json.dumps(self.data), content_type="application/json")
-    #     self.assertEqual(res.status_code, 404)
-    #
-    # def test_sale_record_deletion(self):
-    #     """TEST API can delete existing sale record"""
-    #     result = self.app.delete('/api/v1/users/sales/1', data=json.dumps(self.data), content_type="application/json")
-    #     self.assertEqual(result.status_code, 200)
-    #     res = self.app.get('/api/v1/users/sales/1', data=json.dumps(self.data),content_type="application/json")
-    #     self.assertEqual(res.status_code, 404)
+
+    def test_sale_record_can_be_edited(self):
+        """TEST API can edit existing sale record list"""
+        result= self.app.put('/api/v1/users/sales/1', data=json.dumps(self.data), content_type="application/json")
+        self.assertEqual(result.status_code, 200)
+        res= self.app.put('/api/v1/users/sales/12', data=json.dumps(self.data), content_type="application/json")
+        self.assertEqual(res.status_code, 404)
+
+    def test_sale_record_deletion(self):
+        """TEST API can delete existing sale record"""
+        result = self.app.delete('/api/v1/users/sales/1', data=json.dumps(self.data), content_type="application/json")
+        self.assertEqual(result.status_code, 200)
+        res = self.app.get('/api/v1/users/sales/1', data=json.dumps(self.data),content_type="application/json")
+        self.assertEqual(res.status_code, 404)
