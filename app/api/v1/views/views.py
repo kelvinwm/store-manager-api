@@ -1,8 +1,8 @@
 from flask_restful import Resource, reqparse
-from app.api.v1.models import Products, Sales
+from app.api.v1.models import Products, Sales, Users
 
 product = Products()
-
+users = Users()
 sale = Sales()
 
 
@@ -104,3 +104,10 @@ class Sale(Resource):
         """delete a single sale record in all_sales list"""
         return sale.delete_sale(sale_id)
 
+
+class UserAuth(Resource):
+    def get(self):
+        return users.login()
+
+    def post(self):
+        return users.add_user()

@@ -1,6 +1,13 @@
-from flask import make_response, jsonify
+from flask import make_response, jsonify, request
 from app.api.v1.utils import Validate
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from werkzeug.security import generate_password_hash, check_password_hash
+from instance.config import Config
+import functools
 
+
+config = Config()
+users=[]
 products = []
 all_sales = []
 cart_items = []
@@ -147,3 +154,32 @@ class Sales:
             "status": "OK",
             "Message": "Product deleted successfully"
         }), 200)
+
+
+class Users:
+    def login(self):
+        auth = request.authorization
+        if not auth or not auth.username or not auth.password:
+            return jsonify({"Message": "Please enter all credentials"})
+        user = [user for user in users if user["name"] == auth.username]
+        if not user:
+            return jsonify({"Message": "User does not exist"})
+        if check_password_hash(user[0]["password"], auth.password):
+            """generate token"""
+            s = Serializer(config.SECRET_KEY, expires_in=30)
+            token = s.dumps({"username": user[0]["name"]}).decode('utf-8')
+
+            return jsonify({"Token": token})
+
+        return jsonify({"Message": "Invalid credentials"})
+
+    def add_user(self):
+        data = request.get_json()
+        passwd = generate_password_hash(data["password"], method="sha256")
+
+        new_user = {"name": data["username"],
+                    "password": passwd,
+                    "Role": data["role"]}
+        users.append(new_user)
+        return jsonify({"Message": "User registered successfully",
+                        "Users": users})
