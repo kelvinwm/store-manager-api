@@ -51,7 +51,7 @@ class TestProducts(unittest.TestCase):
         """TEST API can add product to list properly"""
         response = self.app.post('/api/v1/users/products', data=json.dumps(self.err_data), headers=self.headers)
         result = json.loads(response.data.decode('utf-8'))
-        self.assertEqual(result, {'message': {'price': 'No price provided'}})
+        self.assertEqual(result, {'message': {'price': 'Invalid entry'}})
 
     #
     def test_get_one_product(self):
