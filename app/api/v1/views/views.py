@@ -1,4 +1,5 @@
 from flask_restful import Resource, reqparse
+from flask import make_response, jsonify
 from app.api.v1.models import Products, Sales, Users
 
 product = Products()
@@ -113,3 +114,8 @@ class UserLogin(Resource):
 class UserSignup(Resource):
     def post(self):
         return users.add_user()
+
+
+class Home(Resource):
+    def get(self):
+        return make_response(jsonify({"Message": " Welcome to store manager api"}), 200)
