@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9c4ad721-88f3-414e-bf5c-5cc11d5a3eb0" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml___jb_tmp___" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml___jb_tmp___" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/tests/test_cart.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/tests/test_product.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/tests/test_product.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -102,6 +100,7 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>env</find>
+      <find>No</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -122,6 +121,7 @@
         <option value="$PROJECT_DIR$/app/tests/test_cart.py" />
         <option value="$PROJECT_DIR$/app/api/v1/models.py" />
         <option value="$PROJECT_DIR$/app/tests/test_product.py" />
+        <option value="$PROJECT_DIR$/requirements.txt" />
       </list>
     </option>
   </component>
@@ -498,9 +498,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/requirements.txt">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/api/v1/utils.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="119">
@@ -597,6 +594,13 @@
           <folding>
             <element signature="e#0#49#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirements.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="12" selection-start-line="12" selection-end-line="12" />
         </state>
       </provider>
     </entry>
