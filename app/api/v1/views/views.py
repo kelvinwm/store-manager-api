@@ -1,5 +1,5 @@
-from flask_restful import Resource, reqparse
-from flask import make_response, jsonify
+from flask_restful import Resource, reqparse, Api
+from flask import make_response, jsonify, Blueprint
 from app.api.v1.models import Products, Sales, Users
 
 product = Products()
@@ -119,3 +119,9 @@ class UserSignup(Resource):
 class Home(Resource):
     def get(self):
         return make_response(jsonify({"Message": " Welcome to store manager api"}), 200)
+
+
+auth_api = Blueprint("auth_api", __name__)
+api = Api(auth_api)
+api.add_resource(UserSignup, '/signup', endpoint="auth_signup")
+api.add_resource(UserLogin, '/login', endpoint="auth_login")

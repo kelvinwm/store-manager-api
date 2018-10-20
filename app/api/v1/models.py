@@ -4,13 +4,12 @@ import functools
 import jwt
 import datetime
 
-
-app= Flask(__name__)
+app = Flask(__name__)
 products = []
 all_sales = []
 cart_items = []
 users = []
-app.config["SECRET_KEY"]="NOCSNDOCNnocnsodi"
+app.config["SECRET_KEY"] = "NOCSNDOCNnocnsodi"
 
 
 def login_required(func):
@@ -132,7 +131,7 @@ class Sales:
     """sales functions"""
 
     @login_required
-    def get_all_sales( current_user, self):
+    def get_all_sales(current_user, self):
         if not current_user == "admin":
             return make_response(jsonify({
                 "Message": "Permission denied"
@@ -211,61 +210,6 @@ class Sales:
         }), 200)
 
 
-class Cart:
-    """cart functions"""
-
-    def get_all_cart_items(self):
-        """Get all items in the cart"""
-        return make_response(jsonify({
-            "All sales": cart_items
-        }), 200)
-
-    def add_to_cart(self, product_name, quantity, price, total_price, date):
-        """Get a single item"""
-        item_id = len(cart_items) + 1
-
-        if price < 0:
-            return make_response(jsonify({
-                "Message": "price cannot be a negative number"
-            }), 200)
-        if total_price < 0:
-            return make_response(jsonify({
-                "Message": "total_price cannot be a negative number"
-            }), 200)
-        if quantity < 0:
-            return make_response(jsonify({
-                "Message": "Quantity cannot be a negative number"
-            }), 200)
-
-        new_cart_item = {"id": item_id,
-                         "product_name": product_name,
-                         "quantity": quantity,
-                         "price": price,
-                         "total_price": total_price,
-                         "date": date}
-        cart_items.append(new_cart_item)
-
-        return make_response(jsonify({
-            "status": "OK",
-            "Message": "Product added successfully",
-            "all_sales": cart_items
-        }), 201)
-
-    def delete_cart_item(self, product_id):
-        cart = [cart for cart in cart_items if cart['id'] == product_id]
-        if not cart:
-            return make_response(jsonify({
-                "status": "OK",
-                "Message": "Product not found"
-            }), 404)
-
-        cart_items.remove(cart[0])
-        return make_response(jsonify({
-            "status": "OK",
-            "Message": "Product deleted successfully"
-        }), 200)
-
-
 class Users:
     def login(self):
         data = request.get_json()
@@ -277,7 +221,8 @@ class Users:
         if check_password_hash(user[0]["password"], data["password"]):
             """generate token"""
             token = jwt.encode({"username": user[0]["name"], 'exp': datetime.datetime.utcnow()
-                                                                    + datetime.timedelta(minutes=3)}, app.config["SECRET_KEY"])
+                                                                    + datetime.timedelta(minutes=3)},
+                               app.config["SECRET_KEY"])
 
             return jsonify({"Token": token.decode('UTF-8')})
 
@@ -285,12 +230,13 @@ class Users:
 
     def add_user(self):
         data = request.get_json()
+        if not data["username"] or not data["password"] or not data["role"]:
+            return make_response(jsonify({"message": "Please enter all credentials"}))
         pws = data["password"]
         password = generate_password_hash(pws, method="sha256")
-
         new_user = {"name": data["username"],
                     "password": password,
                     "Role": data["role"]}
         users.append(new_user)
-        return jsonify({"Message": "User registered successfully",
-                        "Users": users})
+        return make_response(jsonify({"Message": "User registered successfully",
+                                      "Users": users}), 201)
