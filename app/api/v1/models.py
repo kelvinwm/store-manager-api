@@ -1,15 +1,16 @@
-from flask import make_response, jsonify, request
+from flask import make_response, jsonify, request, Flask
 from werkzeug.security import generate_password_hash, check_password_hash
-from instance.config import Config
 import functools
 import jwt
 import datetime
 
+
+app= Flask(__name__)
 products = []
 all_sales = []
 cart_items = []
 users = []
-config = Config()
+app.config["SECRET_KEY"]="NOCSNDOCNnocnsodi"
 
 
 def login_required(func):
@@ -22,7 +23,7 @@ def login_required(func):
         if not token:
             return "No token"
         try:
-            data = jwt.decode(token, config.SECRET_KEY)
+            data = jwt.decode(token, app.config["SECRET_KEY"])
             current_user = data['username']
         except:
             return "Token is invalid"
@@ -276,7 +277,7 @@ class Users:
         if check_password_hash(user[0]["password"], data["password"]):
             """generate token"""
             token = jwt.encode({"username": user[0]["name"], 'exp': datetime.datetime.utcnow()
-                                                                    + datetime.timedelta(minutes=3)}, config.SECRET_KEY)
+                                                                    + datetime.timedelta(minutes=3)}, app.config["SECRET_KEY"])
 
             return jsonify({"Token": token.decode('UTF-8')})
 
