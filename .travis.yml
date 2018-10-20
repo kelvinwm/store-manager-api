@@ -10,7 +10,7 @@ install:
 
 # Run tests
 script:
-   - nosetests --with-coverage --cover-package=app && coverage report
+   - pytest --cov=app
 
 after_success:
  - coveralls
