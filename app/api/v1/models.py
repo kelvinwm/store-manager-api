@@ -267,16 +267,14 @@ class Cart:
 
 class Users:
     def login(self):
-        auth = request.authorization
-        if not auth or not auth.username or not auth.password:
+        data = request.get_json()
+        if not data or not data["username"] or not data["password"]:
             return jsonify({"Message": "Please enter all credentials"})
-        user = [user for user in users if user["name"] == auth.username]
+        user = [user for user in users if user["name"] == data["username"]]
         if not user:
             return jsonify({"Message": "User does not exist"})
-        if check_password_hash(user[0]["password"], auth.password):
+        if check_password_hash(user[0]["password"], data["password"]):
             """generate token"""
-            # s = Serializer(config.SECRET_KEY, expires_in=3600)
-            # token = s.dumps({"username": user[0]["name"]}).decode('utf-8')
             token = jwt.encode({"username": user[0]["name"], 'exp': datetime.datetime.utcnow()
                                                                     + datetime.timedelta(minutes=3)}, config.SECRET_KEY)
 
