@@ -1,30 +1,63 @@
 from flask import make_response, jsonify, request
-from app.api.v1.utils import Validate
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from werkzeug.security import generate_password_hash, check_password_hash
 from instance.config import Config
 import functools
+import jwt
+import datetime
 
-
-config = Config()
-users=[]
 products = []
 all_sales = []
 cart_items = []
+users = []
+config = Config()
+
+
+def login_required(func):
+    @functools.wraps(func)
+    def user_auth(*args, **kwargs):
+        token = None
+
+        if 'access-token' in request.headers:
+            token = request.headers['access-token']
+        if not token:
+            return "No token"
+        try:
+            data = jwt.decode(token, config.SECRET_KEY)
+            current_user = data['username']
+        except:
+            return "Token is invalid"
+
+        return func(current_user, *args, **kwargs)
+
+    return user_auth
 
 
 class Products:
     """Product functions"""
 
-    def get_all_products(self):
+    @login_required
+    def get_all_products(current_user, self):
         return make_response(jsonify({
             "All products": products
         }), 200)
 
-    def add_product(self, product_name, price, description, quantity):
+    @login_required
+    def add_product(current_user, self, product_name, price, description, quantity):
+        if not current_user == "admin":
+            return make_response(jsonify({
+                "Message": "Permission denied"
+            }))
         item_id = len(products) + 1
-
-        Validate().validate_type(price, quantity)
+        if price < 0:
+            # raise ValueError("price cannot be a negative number")
+            return make_response(jsonify({
+                "Message": "price cannot be a negative number"
+            }), 200)
+        if quantity < 0:
+            return make_response(jsonify({
+                "Message": "Quantity cannot be a negative number"
+            }), 200)
+        # Validate().validate_type(quantity)
         new_product = {"id": item_id,
                        "product_name": product_name,
                        "description": description,
@@ -37,7 +70,8 @@ class Products:
             "Products": products
         }), 201)
 
-    def get_one_product(self, product_id):
+    @login_required
+    def get_one_product(current_user, self, product_id):
         item = [product for product in products if product["id"] == product_id]
         if not item:
             return make_response(jsonify({
@@ -49,7 +83,13 @@ class Products:
             "product": item
         }), 200)
 
-    def update_product(self, product_id, product_name, description, quantity, price):
+    @login_required
+    def update_product(current_user, self, product_id, product_name, description, quantity, price):
+
+        if not current_user == "admin":
+            return make_response(jsonify({
+                "Message": "Permission denied"
+            }))
 
         product = [product for product in products if product["id"] == product_id]
         if not product:
@@ -67,7 +107,12 @@ class Products:
             "Message": product
         }), 200)
 
-    def delete_product(self, product_id):
+    @login_required
+    def delete_product(current_user, self, product_id):
+        if not current_user == "admin":
+            return make_response(jsonify({
+                "Message": "Permission denied"
+            }))
         product = [product for product in products if product['id'] == product_id]
         if not product:
             return make_response(jsonify({
@@ -85,12 +130,18 @@ class Products:
 class Sales:
     """sales functions"""
 
-    def get_all_sales(self):
+    @login_required
+    def get_all_sales( current_user, self):
+        if not current_user == "admin":
+            return make_response(jsonify({
+                "Message": "Permission denied"
+            }))
         return make_response(jsonify({
             "All sales": all_sales
         }), 200)
 
-    def add_sale(self, attendant_name, product_name, quantity, price, total_price, date):
+    @login_required
+    def add_sale(current_user, self, attendant_name, product_name, quantity, price, total_price, date):
         item_id = len(all_sales) + 1
         new_sale = {"sale_id": item_id,
                     "attendant_name": attendant_name,
@@ -103,14 +154,15 @@ class Sales:
         product_id = [product for product in products if product['product_name'] == product_name]
         if product_id:
             """call delete function from products class to delete the product from the products list"""
-            product_id[0]['quantity']=product_id[0]['quantity']-1
+            product_id[0]['quantity'] = product_id[0]['quantity'] - 1
         return make_response(jsonify({
             "status": "OK",
             "Message": "Product added successfully",
             "all_sales": all_sales
         }), 201)
 
-    def get_one_sale(self, product_id):
+    @login_required
+    def get_one_sale(current_user, self, product_id):
         item = [sale for sale in all_sales if sale["sale_id"] == product_id]
         if not item:
             return make_response(jsonify({
@@ -122,7 +174,8 @@ class Sales:
             "Sale": item
         }))
 
-    def update_sale(self, product_id, attendant_name, product_name, quantity, price, total_price, date):
+    @login_required
+    def update_sale(current_user, self, product_id, attendant_name, product_name, quantity, price, total_price, date):
         update_sale = [sale for sale in all_sales if sale['sale_id'] == product_id]
         if not update_sale:
             return make_response(jsonify({
@@ -141,7 +194,8 @@ class Sales:
             "Message": all_sales
         }), 200)
 
-    def delete_sale(self, product_id):
+    @login_required
+    def delete_sale(current_user, self, product_id):
         sale = [sale for sale in all_sales if sale['sale_id'] == product_id]
         if not sale:
             return make_response(jsonify({
@@ -150,6 +204,61 @@ class Sales:
             }), 404)
 
         all_sales.remove(sale[0])
+        return make_response(jsonify({
+            "status": "OK",
+            "Message": "Product deleted successfully"
+        }), 200)
+
+
+class Cart:
+    """cart functions"""
+
+    def get_all_cart_items(self):
+        """Get all items in the cart"""
+        return make_response(jsonify({
+            "All sales": cart_items
+        }), 200)
+
+    def add_to_cart(self, product_name, quantity, price, total_price, date):
+        """Get a single item"""
+        item_id = len(cart_items) + 1
+
+        if price < 0:
+            return make_response(jsonify({
+                "Message": "price cannot be a negative number"
+            }), 200)
+        if total_price < 0:
+            return make_response(jsonify({
+                "Message": "total_price cannot be a negative number"
+            }), 200)
+        if quantity < 0:
+            return make_response(jsonify({
+                "Message": "Quantity cannot be a negative number"
+            }), 200)
+
+        new_cart_item = {"id": item_id,
+                         "product_name": product_name,
+                         "quantity": quantity,
+                         "price": price,
+                         "total_price": total_price,
+                         "date": date}
+        cart_items.append(new_cart_item)
+
+        return make_response(jsonify({
+            "status": "OK",
+            "Message": "Product added successfully",
+            "all_sales": cart_items
+        }), 201)
+
+    def delete_cart_item(self, product_id):
+        cart = [cart for cart in cart_items if cart['id'] == product_id]
+        if not cart:
+            return make_response(jsonify({
+                "status": "OK",
+                "Message": "Product not found"
+            }), 404)
+
+        cart_items.remove(cart[0])
         return make_response(jsonify({
             "status": "OK",
             "Message": "Product deleted successfully"
@@ -166,19 +275,22 @@ class Users:
             return jsonify({"Message": "User does not exist"})
         if check_password_hash(user[0]["password"], auth.password):
             """generate token"""
-            s = Serializer(config.SECRET_KEY, expires_in=30)
-            token = s.dumps({"username": user[0]["name"]}).decode('utf-8')
+            # s = Serializer(config.SECRET_KEY, expires_in=3600)
+            # token = s.dumps({"username": user[0]["name"]}).decode('utf-8')
+            token = jwt.encode({"username": user[0]["name"], 'exp': datetime.datetime.utcnow()
+                                                                    + datetime.timedelta(minutes=3)}, config.SECRET_KEY)
 
-            return jsonify({"Token": token})
+            return jsonify({"Token": token.decode('UTF-8')})
 
         return jsonify({"Message": "Invalid credentials"})
 
     def add_user(self):
         data = request.get_json()
-        passwd = generate_password_hash(data["password"], method="sha256")
+        pws = data["password"]
+        password = generate_password_hash(pws, method="sha256")
 
         new_user = {"name": data["username"],
-                    "password": passwd,
+                    "password": password,
                     "Role": data["role"]}
         users.append(new_user)
         return jsonify({"Message": "User registered successfully",

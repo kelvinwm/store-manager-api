@@ -105,9 +105,11 @@ class Sale(Resource):
         return sale.delete_sale(sale_id)
 
 
-class UserAuth(Resource):
-    def get(self):
+class UserLogin(Resource):
+    def post(self):
         return users.login()
 
+
+class UserSignup(Resource):
     def post(self):
         return users.add_user()

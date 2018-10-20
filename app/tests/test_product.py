@@ -17,58 +17,60 @@ class TestProducts(unittest.TestCase):
         self.err_data = {"product_name": "Jesma",
                          "description": "Good book",
                          "quantity": 100,
-                         "price": "nklsvnd"
+                         "price": "dkls"
                          }
-        self._data = {"product_name": "Jsma",
-                      "description": "Good book",
-                      "quantity": 100,
-                      "price": -100
-                      }
+        self.sign_up_data = {"username": "admin",
+                             "password": "1234",
+                             "role": "admin"
+                             }
+        self.login_data = {"username": "admin",
+                           "password": "1234"
+                           }
+
+        response = self.app.post('/api/v1/users/signup', data=json.dumps(self.sign_up_data),
+                                 content_type='application/json')
+        self.result = self.app.post('/api/v1/users/login', data=json.dumps(self.login_data),
+                                    content_type='application/json')
+        self.token = json.loads(self.result.data.decode('utf-8'))["Token"]
+        self.headers = {'content-type': 'application/json', 'access-token': self.token}
 
     def test_get_all_items(self):
         """TEST API can return all products in the list"""
-        response = self.app.get('/api/v1/users/products', content_type='application/json')
+        response = self.app.get('/api/v1/users/products', headers=self.headers)
         self.assertEqual(response.status_code, 200)
 
     def test_add_product(self):
         """TEST API can add product to list properly"""
-        response = self.app.post('/api/v1/users/products', data=json.dumps(self.data), content_type="application/json")
+        response = self.app.post('/api/v1/users/products', data=json.dumps(self.data), headers=self.headers)
         result = json.loads(response.data.decode('utf-8'))
         self.assertEqual(result["Message"], "Product added successfully")
         self.assertEqual(response.status_code, 201)
 
+    #
     def test_invalid_add_product(self):
         """TEST API can add product to list properly"""
-        response = self.app.post('/api/v1/users/products', data=json.dumps(self.err_data),
-                                 content_type="application/json")
+        response = self.app.post('/api/v1/users/products', data=json.dumps(self.err_data), headers=self.headers)
         result = json.loads(response.data.decode('utf-8'))
-        self.assertEqual(result, {'message': {'price': 'Invalid entry'}})
+        self.assertEqual(result, {'message': {'price': 'No price provided'}})
 
-    def test_negative_number_entries(self):
-        """TEST API can add product to list properly"""
-        response = self.app.post('/api/v1/users/products', data=json.dumps(self._data),
-                                 content_type="application/json")
-        result = json.loads(response.data.decode('utf-8'))
-        self.assertEqual(result['message'], "price or quantity should be a positive integer")
-
+    #
     def test_get_one_product(self):
         """TEST API can get a single product"""
-        result = self.app.get('/api/v1/users/products/1', content_type='application/json')
+        result = self.app.get('/api/v1/users/products/1', headers=self.headers)
         self.assertEqual(result.status_code, 200)
-        result = self.app.get('/api/v1/users/products/11', content_type='application/json')
+        result = self.app.get('/api/v1/users/products/11' ,headers=self.headers)
         self.assertEqual(result.status_code, 404)
 
     def test_product_list_can_be_edited(self):
         """TEST API can edit existing product list"""
-        result = self.app.put('/api/v1/users/products/1', data=json.dumps(self.data), content_type="application/json")
+        result = self.app.put('/api/v1/users/products/1', data=json.dumps(self.data), headers= self.headers)
         self.assertEqual(result.status_code, 200)
-        res = self.app.put('/api/v1/users/products/12', data=json.dumps(self.data), content_type="application/json")
+        res = self.app.put('/api/v1/users/products/12', data=json.dumps(self.data), headers= self.headers)
         self.assertEqual(res.status_code, 404)
 
     def test_product_list_deletion(self):
         """TEST API can delete existing product list item"""
-        result = self.app.delete('/api/v1/users/products/1', data=json.dumps(self.data),
-                                 content_type="application/json")
+        result = self.app.delete('/api/v1/users/products/1', data=json.dumps(self.data), headers=self.headers)
         self.assertEqual(result.status_code, 200)
-        res = self.app.get('/api/v1/users/products/1', data=json.dumps(self.data), content_type="application/json")
+        res = self.app.get('/api/v1/users/products/1', data=json.dumps(self.data),headers=self.headers)
         self.assertEqual(res.status_code, 404)
