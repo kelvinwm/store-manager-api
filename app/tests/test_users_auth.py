@@ -11,22 +11,26 @@ class TestUsersAuth(unittest.TestCase):
         self.app = create_app().test_client()
         self.app.testing = True
 
-        self.sign_up_data = {"username": "admin",
-                             "password": "1234",
+        self.sign_up_data = {"username": "kevo",
+                             "email": "prince@gmail.com",
+                             "password": "12A#3dsvs3",
                              "role": "admin"
                              }
-        self.invalid_sign_up_data = {"username": "admin",
-                                     "password": "1234",
-                                     "role": ""
-                                     }
-        self.login_data = {"username": "admin",
-                           "password": "1234"
+        self.login_data = {"username": "kevo",
+                           "email": "prince@gmail.com",
+                           "password": "12A#3dsvs3"
                            }
-        self.empty_login_data = {"username": "admin",
+        self.invalid_sign_up_data = {"username": "kevo",
+                                     "email": "prince@gmail.com",
+                                     "password": "12Asvs3",
+                                     "role": "admin"
+                                     }
+        self.empty_login_data = {"email": "",
                                  "password": ""
                                  }
-        self.invalid_login_data = {"username": "admin",
-                                   "password": "0976"
+        self.invalid_login_data = {"username": "kevo",
+                                   "email": "prince@gmail.com",
+                                   "password": "12A#3ds9vs3"
                                    }
 
     def test_valid_signup(self):
@@ -46,7 +50,7 @@ class TestUsersAuth(unittest.TestCase):
         response = self.app.post('/api/v1/auth/signup', data=json.dumps(self.invalid_sign_up_data),
                                  content_type='application/json')
         result = json.loads(response.data.decode('utf-8'))
-        self.assertEqual(result["message"], "Please enter all credentials")
+        self.assertEqual(result["Message"], "Invalid email or password")
 
     def test_empty_credentials_login(self):
         """TEST API can sign up users correctly"""

@@ -1,5 +1,5 @@
-from flask_restful import Resource, reqparse, Api
-from flask import make_response, jsonify, Blueprint
+from flask_restful import Resource, reqparse
+from flask import make_response, jsonify
 from app.api.v1.models import Products, Sales, Users
 
 product = Products()
@@ -23,11 +23,12 @@ class Products(Resource):
 
     def get(self):
         """get all Products from products list"""
+
         return product.get_all_products()
 
     def post(self):
         """Add a product to the products list"""
-        args = self.parser.parse_args()
+        args = self.parser.parse_args(strict=True)
         return product.add_product(**args)
 
 
@@ -48,7 +49,7 @@ class Product(Resource):
 
     def put(self, product_id):
         """update a single product from the products list """
-        args = self.parser.parse_args()
+        args = self.parser.parse_args(strict=True)
         return product.update_product(product_id, **args)
 
     def delete(self, product_id):
@@ -66,7 +67,6 @@ class Sales(Resource):
         self.parser.add_argument("price", required=True, type=int, help="Invalid entry", location=['json'])
         self.parser.add_argument("total_price", required=True, type=int, help="Invalid entry", location=['json'])
         self.parser.add_argument("quantity", required=True, type=int, help="Invalid entry", location=['json'])
-        self.parser.add_argument("date", required=True, help="Invalid entry", location=['json'])
         super().__init__()
 
     def get(self):
@@ -75,7 +75,7 @@ class Sales(Resource):
 
     def post(self):
         """add a new sale record to all_sales list """
-        args = self.parser.parse_args()
+        args = self.parser.parse_args(strict=True)
         return sale.add_sale(**args)
 
 
@@ -89,7 +89,6 @@ class Sale(Resource):
         self.parser.add_argument("price", required=True, type=int, help="Invalid entry", location=['json'])
         self.parser.add_argument("total_price", required=True, type=int, help="Invalid entry", location=['json'])
         self.parser.add_argument("quantity", required=True, type=int, help="Invalid entry", location=['json'])
-        self.parser.add_argument("date", required=True, help="Invalid entry", location=['json'])
         super().__init__()
 
     def get(self, sale_id):
@@ -98,7 +97,7 @@ class Sale(Resource):
 
     def put(self, sale_id):
         """update a single sale record in all_sales list"""
-        args = self.parser.parse_args()
+        args = self.parser.parse_args(strict=True)
         return sale.update_sale(sale_id, **args)
 
     def delete(self, sale_id):
@@ -116,12 +115,11 @@ class UserSignup(Resource):
         return users.add_user()
 
 
+class UserLogout(Resource):
+    def get(self):
+        return users.log_out()
+
+
 class Home(Resource):
     def get(self):
         return make_response(jsonify({"Message": " Welcome to store manager api"}), 200)
-
-
-auth_api = Blueprint("auth_api", __name__)
-api = Api(auth_api)
-api.add_resource(UserSignup, '/signup', endpoint="auth_signup")
-api.add_resource(UserLogin, '/login', endpoint="auth_login")
