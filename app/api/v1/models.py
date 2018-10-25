@@ -94,7 +94,7 @@ class Products:
     @login_required
     def update_product(current_user, token, self, product_id, **kwargs):
         """Update a single product"""
-        if current_user != "true":
+        if current_user != "admin":
             return make_response(jsonify({
                 "Message": "Permission denied.Contact admin"
             }))
@@ -117,7 +117,7 @@ class Products:
     @login_required
     def delete_product(current_user, token, self, product_id):
         """Delete a single product"""
-        if current_user != "true":
+        if current_user != "admin":
             return make_response(jsonify({
                 "Message": "Permission denied.Contact admin"
             }))
@@ -257,8 +257,7 @@ class Users:
         if check_password_hash(user[0]["password"], data["password"]):
             """generate token"""
             token = jwt.encode({"username": user[0]["Role"], 'exp': datetime.datetime.utcnow()
-                                                                    + datetime.timedelta(minutes=60)},
-                               app.config["SECRET_KEY"])
+                                + datetime.timedelta(minutes=60)}, app.config["SECRET_KEY"])
             return jsonify({"Token": token.decode('UTF-8')})
         return jsonify({"Message": "Invalid credentials"})
 
