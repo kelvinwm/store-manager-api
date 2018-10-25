@@ -66,7 +66,7 @@ class TestSales(unittest.TestCase):
 
     def test_get_one_sale_record(self):
         """TEST API can get a single sales record"""
-        result = self.app.get('/api/v1/sales/1',headers=self.headers)
+        result = self.app.get('/api/v1/sales/1', headers=self.headers)
         self.assertEqual(result.status_code, 200)
         response = self.app.get('/api/v1/sales/9', headers=self.headers)
         result = json.loads(response.data.decode('utf-8'))
@@ -74,9 +74,9 @@ class TestSales(unittest.TestCase):
 
     def test_sale_record_can_be_edited(self):
         """TEST API can edit existing sale record list"""
-        result= self.app.put('/api/v1/sales/1', data=json.dumps(self.data), headers=self.headers)
+        result = self.app.put('/api/v1/sales/1', data=json.dumps(self.data), headers=self.headers)
         self.assertEqual(result.status_code, 200)
-        res= self.app.put('/api/v1/sales/12', data=json.dumps(self.data), headers=self.headers)
+        res = self.app.put('/api/v1/sales/12', data=json.dumps(self.data), headers=self.headers)
         result = json.loads(res.data.decode('utf-8'))
         self.assertEqual(result, {'Message': 'Product not found', 'status': 'OK'})
 
