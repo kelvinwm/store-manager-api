@@ -1,5 +1,5 @@
-from flask_restful import Resource, reqparse
-from flask import make_response, jsonify
+from flask_restful import Resource, reqparse, Api
+from flask import make_response, jsonify, Blueprint
 from app.api.v1.models import Products, Sales, Users
 
 product = Products()
@@ -123,3 +123,8 @@ class UserLogout(Resource):
 class Home(Resource):
     def get(self):
         return make_response(jsonify({"Message": " Welcome to store manager api"}), 200)
+
+
+landing_page = Blueprint("landing_page", __name__)
+api = Api(landing_page)
+api.add_resource(Home, '/', endpoint="landing page")

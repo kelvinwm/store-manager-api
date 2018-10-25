@@ -12,17 +12,17 @@ class TestUsersAuth(unittest.TestCase):
         self.app.testing = True
 
         self.sign_up_data = {"username": "kevo",
-                             "email": "prince@gmail.com",
+                             "email": "prince2@gmail.com",
                              "password": "12A#3dsvs3",
                              "role": "admin"
                              }
         self.login_data = {"username": "kevo",
-                           "email": "prince@gmail.com",
+                           "email": "prince2@gmail.com",
                            "password": "12A#3dsvs3"
                            }
         self.invalid_sign_up_data = {"username": "kevo",
-                                     "email": "prince@gmail.com",
-                                     "password": "12Asvs3",
+                                     "email": "princegmail.com",
+                                     "password": "12Asvs",
                                      "role": "admin"
                                      }
         self.empty_login_data = {"email": "",
@@ -30,7 +30,7 @@ class TestUsersAuth(unittest.TestCase):
                                  }
         self.invalid_login_data = {"username": "kevo",
                                    "email": "prince@gmail.com",
-                                   "password": "12A#3ds9vs3"
+                                   "password": "12ds9vs33"
                                    }
 
     def test_valid_signup(self):

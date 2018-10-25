@@ -25,7 +25,7 @@ def login_required(func):
             token = request.headers['access-token']
             tk = [tk for tk in black_listed_tokens if token == tk]
             if tk:
-                return "Please login"
+                return "Token blacklisted, please login"
         if not token:
             return "No token"
         try:
@@ -57,10 +57,13 @@ class Products:
         """Add a single product"""
         if not args['description'] or not args['product_name'] or args['quantity'] < 1 or args['price'] < 1:
             return jsonify({"Message": "Invalid entry"})
-        if not current_user == "admin":
+        if current_user != "admin":
             return make_response(jsonify({
                 "Message": "Permission denied.Contact admin"
             }))
+        product = [product for product in products if product["product_name"] == args['product_name']]
+        if product:
+            return "Products already exists"
         item_id = len(products) + 1
         new_product = {"id": item_id,
                        "product_name": args['product_name'],
@@ -91,7 +94,7 @@ class Products:
     @login_required
     def update_product(current_user, token, self, product_id, **kwargs):
         """Update a single product"""
-        if not current_user == "admin":
+        if current_user != "true":
             return make_response(jsonify({
                 "Message": "Permission denied.Contact admin"
             }))
@@ -114,7 +117,7 @@ class Products:
     @login_required
     def delete_product(current_user, token, self, product_id):
         """Delete a single product"""
-        if not current_user == "admin":
+        if current_user != "true":
             return make_response(jsonify({
                 "Message": "Permission denied.Contact admin"
             }))
@@ -138,7 +141,7 @@ class Sales:
     @login_required
     def get_all_sales(current_user, token, self):
         """Get all sale record"""
-        if not current_user == "admin":
+        if current_user != "admin":
             return make_response(jsonify({
                 "Message": "Permission denied.Contact admin"
             }))
@@ -158,7 +161,7 @@ class Sales:
             return jsonify({"Message": "Invalid entry"})
         user = [user for user in users if user["name"] == kwargs['attendant_name']]
         if not user:
-            return jsonify({"Message":"Please login"})
+            return jsonify({"Message": "Please login to your account"})
         item_id = len(all_sales) + 1
         new_sale = {"sale_id": item_id,
                     "attendant_name": kwargs['attendant_name'],
@@ -254,7 +257,8 @@ class Users:
         if check_password_hash(user[0]["password"], data["password"]):
             """generate token"""
             token = jwt.encode({"username": user[0]["Role"], 'exp': datetime.datetime.utcnow()
-                                + datetime.timedelta(minutes=60)}, app.config["SECRET_KEY"])
+                                                                    + datetime.timedelta(minutes=60)},
+                               app.config["SECRET_KEY"])
             return jsonify({"Token": token.decode('UTF-8')})
         return jsonify({"Message": "Invalid credentials"})
 
@@ -263,8 +267,9 @@ class Users:
         data = request.get_json()
         if not data["email"] or not data["password"] or not data["role"]:
             return make_response(jsonify({"message": "Enter all credentials"}))
-        is_valid = validate_email(data["email"])
-        if not is_valid or not re.match(r'[A-Za-z0-9@#$%^&+=]{8}', data["password"]) or len(data["password"]) > 12:
+        is_valid = re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', data["email"])
+        if not is_valid or not re.match('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$])', data["password"]) \
+                or len(data["password"]) > 12:
             return jsonify({"Message": "Invalid email or password"})
         pws = data["password"]
         password = generate_password_hash(pws, method="sha256")
@@ -272,6 +277,9 @@ class Users:
                     "email": data["email"],
                     "password": password,
                     "Role": data["role"]}
+        user = [user for user in users if user["email"] == new_user["email"]]
+        if user:
+            return "User Already registered"
         users.append(new_user)
         return make_response(jsonify({"Message": "User registered successfully", "Users": users}), 201)
 
