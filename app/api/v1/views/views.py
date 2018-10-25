@@ -1,0 +1,130 @@
+from flask_restful import Resource, reqparse, Api
+from flask import make_response, jsonify, Blueprint
+from app.api.v1.models import Products, Sales, Users
+
+product = Products()
+users = Users()
+sale = Sales()
+
+
+# cart = Cart()
+
+
+class Products(Resource):
+    """get all Products or post a product to the products list"""
+
+    def __init__(self):
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument("product_name", required=True, help="Invalid entry", location=['json'])
+        self.parser.add_argument("price", required=True, type=int, help="Invalid entry", location=['json'])
+        self.parser.add_argument("description", required=True, help="Invalid entry", location=['json'])
+        self.parser.add_argument("quantity", required=True, type=int, help="Invalid entry", location=['json'])
+        super().__init__()
+
+    def get(self):
+        """get all Products from products list"""
+
+        return product.get_all_products()
+
+    def post(self):
+        """Add a product to the products list"""
+        args = self.parser.parse_args(strict=True)
+        return product.add_product(**args)
+
+
+class Product(Resource):
+    """get or update or delete a single product from the products list """
+
+    def __init__(self):
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument("product_name", required=True, help="Invalid entry", location=['json'])
+        self.parser.add_argument("price", required=True, type=int, help="Invalid entry", location=['json'])
+        self.parser.add_argument("description", required=True, help="Invalid entry", location=['json'])
+        self.parser.add_argument("quantity", required=True, type=int, help="Invalid entry", location=['json'])
+        super().__init__()
+
+    def get(self, product_id):
+        """get a single product from the products list """
+        return product.get_one_product(product_id)
+
+    def put(self, product_id):
+        """update a single product from the products list """
+        args = self.parser.parse_args(strict=True)
+        return product.update_product(product_id, **args)
+
+    def delete(self, product_id):
+        """delete a single product from the products list """
+        return product.delete_product(product_id)
+
+
+class Sales(Resource):
+    """Sales """
+
+    def __init__(self):
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument("attendant_name", required=True, help="Invalid entry", location=['json'])
+        self.parser.add_argument("product_name", required=True, help="Invalid entry", location=['json'])
+        self.parser.add_argument("price", required=True, type=int, help="Invalid entry", location=['json'])
+        self.parser.add_argument("total_price", required=True, type=int, help="Invalid entry", location=['json'])
+        self.parser.add_argument("quantity", required=True, type=int, help="Invalid entry", location=['json'])
+        super().__init__()
+
+    def get(self):
+        """get all sales from all_sales list """
+        return sale.get_all_sales()
+
+    def post(self):
+        """add a new sale record to all_sales list """
+        args = self.parser.parse_args(strict=True)
+        return sale.add_sale(**args)
+
+
+class Sale(Resource):
+    """get or update or delete a single sale """
+
+    def __init__(self):
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument("attendant_name", required=True, help="Invalid entry", location=['json'])
+        self.parser.add_argument("product_name", required=True, help="Invalid entry", location=['json'])
+        self.parser.add_argument("price", required=True, type=int, help="Invalid entry", location=['json'])
+        self.parser.add_argument("total_price", required=True, type=int, help="Invalid entry", location=['json'])
+        self.parser.add_argument("quantity", required=True, type=int, help="Invalid entry", location=['json'])
+        super().__init__()
+
+    def get(self, sale_id):
+        """get a single sale from  all_sales list"""
+        return sale.get_one_sale(sale_id)
+
+    def put(self, sale_id):
+        """update a single sale record in all_sales list"""
+        args = self.parser.parse_args(strict=True)
+        return sale.update_sale(sale_id, **args)
+
+    def delete(self, sale_id):
+        """delete a single sale record in all_sales list"""
+        return sale.delete_sale(sale_id)
+
+
+class UserLogin(Resource):
+    def post(self):
+        return users.login()
+
+
+class UserSignup(Resource):
+    def post(self):
+        return users.add_user()
+
+
+class UserLogout(Resource):
+    def get(self):
+        return users.log_out()
+
+
+class Home(Resource):
+    def get(self):
+        return make_response(jsonify({"Message": " Welcome to store manager api"}), 200)
+
+
+landing_page = Blueprint("landing_page", __name__)
+api = Api(landing_page)
+api.add_resource(Home, '/', endpoint="landing page")
